@@ -1,0 +1,5 @@
+Flask==3.0.3
+telethon==1.36.0
+gunicorn==22.0.0
+python-dotenv==1.0.1
+pysocks==1.7.1

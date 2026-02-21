@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#000] flex items-center justify-center min-h-screen p-6">
+    <div class="max-w-sm w-full">
+        <div class="mb-10 text-center">
+            <div class="inline-block border-2 border-white px-4 py-1 mb-4">
+                <span class="text-white font-bold tracking-[0.3em] text-xs uppercase">Core Auth</span>
+            </div>
+            <h2 class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Админ-панель v2.0</h2>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-900/20 border border-red-900 text-red-400 p-4 rounded-xl mb-6 text-xs text-center font-bold">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('admin.login') }}" class="space-y-4">
+            <input type="text" name="username" placeholder="Логин" required
+                   class="w-full bg-[#111] border border-[#222] p-4 rounded-xl text-white outline-none focus:border-white transition-all">
+            <input type="password" name="password" placeholder="Пароль" required
+                   class="w-full bg-[#111] border border-[#222] p-4 rounded-xl text-white outline-none focus:border-white transition-all">
+            <button type="submit" class="w-full bg-white text-black py-4 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-gray-200 transition-colors">Войти в систему</button>
+        </form>
+    </div>
+</body>
+</html>
