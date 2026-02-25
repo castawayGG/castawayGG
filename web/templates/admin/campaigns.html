@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кампании | Telegram Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="text-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar (same as accounts) -->
+        <aside class="w-64 glass-card border-r border-gray-800/50 p-6 fixed h-full">
+            <!-- ... same sidebar as accounts.html ... -->
+        </aside>
+
+        <main class="flex-1 ml-64 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-light">Кампании</h2>
+                <button onclick="showCreateModal()" class="px-4 py-2 bg-green-500/20 text-green-500 rounded-xl text-sm hover:bg-green-500/30 transition">Создать кампанию</button>
+            </div>
+
+            <!-- Campaigns List -->
+            <div class="glass-card rounded-2xl overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-white/5">
+                        <tr class="text-xs text-gray-400 uppercase">
+                            <th class="px-6 py-3 text-left">ID</th>
+                            <th class="px-6 py-3 text-left">Название</th>
+                            <th class="px-6 py-3 text-left">Тип</th>
+                            <th class="px-6 py-3 text-left">Статус</th>
+                            <th class="px-6 py-3 text-left">Целей</th>
+                            <th class="px-6 py-3 text-left">Обработано</th>
+                            <th class="px-6 py-3 text-left">Успешно</th>
+                            <th class="px-6 py-3 text-left">Создана</th>
+                            <th class="px-6 py-3 text-right">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800/50">
+                        {% for campaign in campaigns %}
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="px-6 py-4 text-sm">{{ campaign.id }}</td>
+                            <td class="px-6 py-4 font-medium">{{ campaign.name }}</td>
+                            <td class="px-6 py-4 text-sm">{{ campaign.target_type }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-lg text-xs 
+                                    {% if campaign.status == 'running' %}bg-green-500/20 text-green-500
+                                    {% elif campaign.status == 'paused' %}bg-yellow-500/20 text-yellow-500
+                                    {% elif campaign.status == 'completed' %}bg-blue-500/20 text-blue-500
+                                    {% else %}bg-gray-500/20 text-gray-500{% endif %}">
+                                    {{ campaign.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm">{{ campaign.total_targets }}</td>
+                            <td class="px-6 py-4 text-sm">{{ campaign.processed }}</td>
+                            <td class="px-6 py-4 text-sm text-green-500">{{ campaign.successful }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-400">{{ campaign.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td class="px-6 py-4 text-right space-x-2">
+                                {% if campaign.status == 'draft' %}
+                                <button onclick="startCampaign({{ campaign.id }})" class="px-3 py-1 bg-green-500/20 text-green-500 rounded-lg text-xs hover:bg-green-500/30">Запустить</button>
+                                {% elif campaign.status == 'running' %}
+                                <button onclick="pauseCampaign({{ campaign.id }})" class="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-lg text-xs hover:bg-yellow-500/30">Пауза</button>
+                                <button onclick="stopCampaign({{ campaign.id }})" class="px-3 py-1 bg-red-500/20 text-red-500 rounded-lg text-xs hover:bg-red-500/30">Стоп</button>
+                                {% elif campaign.status == 'paused' %}
+                                <button onclick="resumeCampaign({{ campaign.id }})" class="px-3 py-1 bg-green-500/20 text-green-500 rounded-lg text-xs hover:bg-green-500/30">Продолжить</button>
+                                {% endif %}
+                                <button onclick="deleteCampaign({{ campaign.id }})" class="px-3 py-1 bg-red-500/20 text-red-500 rounded-lg text-xs hover:bg-red-500/30">×</button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="9" class="px-6 py-12 text-center text-gray-500">Нет кампаний</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Campaign Modal -->
+    <div id="createModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50">
+        <div class="bg-[#1a1a1a] rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <h3 class="text-xl font-bold mb-6">Новая кампания</h3>
+            <form id="campaignForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Название</label>
+                    <input type="text" id="campaignName" required class="w-full bg-black/50 border border-gray-800 rounded-xl p-3">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Описание</label>
+                    <textarea id="campaignDesc" rows="2" class="w-full bg-black/50 border border-gray-800 rounded-xl p-3"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Тип цели</label>
+                    <select id="targetType" class="w-full bg-black/50 border border-gray-800 rounded-xl p-3">
+                        <option value="contacts">Контакты</option>
+                        <option value="groups">Группы</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Список целей (каждая с новой строки)</label>
+                    <textarea id="targetList" rows="5" required class="w-full bg-black/50 border border-gray-800 rounded-xl p-3 font-mono text-sm"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Шаблон сообщения</label>
+                    <textarea id="messageTemplate" rows="3" required class="w-full bg-black/50 border border-gray-800 rounded-xl p-3"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Варианты текста (для рандомизации, опционально, каждый с новой строки)</label>
+                    <textarea id="variations" rows="3" class="w-full bg-black/50 border border-gray-800 rounded-xl p-3"></textarea>
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-blue-500/20 text-blue-500 rounded-xl py-3 hover:bg-blue-500/30">Создать</button>
+                    <button type="button" onclick="closeCreateModal()" class="flex-1 bg-gray-500/20 text-gray-500 rounded-xl py-3 hover:bg-gray-500/30">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+            document.getElementById('createModal').classList.add('flex');
+        }
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.add('hidden');
+            document.getElementById('createModal').classList.remove('flex');
+            document.getElementById('campaignForm').reset();
+        }
+
+        document.getElementById('campaignForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('campaignName').value,
+                description: document.getElementById('campaignDesc').value,
+                target_type: document.getElementById('targetType').value,
+                target_list: document.getElementById('targetList').value.split('\n').map(s => s.trim()).filter(Boolean),
+                message_template: document.getElementById('messageTemplate').value,
+                variations: document.getElementById('variations').value.split('\n').map(s => s.trim()).filter(Boolean)
+            };
+            const res = await fetch('/admin/campaigns/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) location.reload();
+        });
+
+        async function startCampaign(id) {
+            await fetch(`/admin/campaigns/${id}/start`, { method: 'POST' });
+            location.reload();
+        }
+        async function pauseCampaign(id) {
+            await fetch(`/admin/campaigns/${id}/pause`, { method: 'POST' });
+            location.reload();
+        }
+        async function stopCampaign(id) {
+            await fetch(`/admin/campaigns/${id}/stop`, { method: 'POST' });
+            location.reload();
+        }
+        async function resumeCampaign(id) {
+            await fetch(`/admin/campaigns/${id}/start`, { method: 'POST' }); // или отдельный resume
+            location.reload();
+        }
+        async function deleteCampaign(id) {
+            if (confirm('Удалить кампанию?')) {
+                await fetch(`/admin/campaigns/${id}`, { method: 'DELETE' });
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

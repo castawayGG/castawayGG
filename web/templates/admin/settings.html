@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки | Telegram Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="text-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar (same as accounts) -->
+        <aside class="w-64 glass-card border-r border-gray-800/50 p-6 fixed h-full">
+            <!-- ... same sidebar as accounts.html ... -->
+        </aside>
+
+        <main class="flex-1 ml-64 p-8">
+            <h2 class="text-3xl font-light mb-8">Настройки</h2>
+
+            <div class="max-w-4xl space-y-8">
+                <!-- Profile -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-medium mb-6">Профиль</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400">Имя пользователя</span>
+                            <span class="font-medium">{{ user.username }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400">Роль</span>
+                            <span class="px-2 py-1 rounded-lg text-xs bg-blue-500/20 text-blue-500">{{ user.role }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400">2FA</span>
+                            <span class="px-2 py-1 rounded-lg text-xs {% if user.otp_secret %}bg-green-500/20 text-green-500{% else %}bg-red-500/20 text-red-500{% endif %}">
+                                {{ 'Включена' if user.otp_secret else 'Отключена' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-medium mb-6">Смена пароля</h3>
+                    <form method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Текущий пароль</label>
+                            <input type="password" name="current_password" required class="w-full bg-black/50 border border-gray-800 rounded-xl p-3">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Новый пароль</label>
+                            <input type="password" name="new_password" required class="w-full bg-black/50 border border-gray-800 rounded-xl p-3">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Подтверждение</label>
+                            <input type="password" name="confirm_password" required class="w-full bg-black/50 border border-gray-800 rounded-xl p-3">
+                        </div>
+                        <button type="submit" name="change_password" class="px-6 py-3 bg-yellow-500/20 text-yellow-500 rounded-xl text-sm hover:bg-yellow-500/30 transition">
+                            Сменить пароль
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2FA Management -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-medium mb-6">Двухфакторная аутентификация</h3>
+                    {% if user.otp_secret %}
+                        <p class="text-sm text-gray-400 mb-4">2FA включена. Для отключения нажмите кнопку ниже.</p>
+                        <form method="POST">
+                            <button type="submit" name="disable_2fa" class="px-6 py-3 bg-red-500/20 text-red-500 rounded-xl text-sm hover:bg-red-500/30 transition">
+                                Отключить 2FA
+                            </button>
+                        </form>
+                    {% else %}
+                        <p class="text-sm text-gray-400 mb-4">2FA отключена. Для включения нажмите кнопку ниже. Сохраните секретный ключ!</p>
+                        <form method="POST">
+                            <button type="submit" name="enable_2fa" class="px-6 py-3 bg-green-500/20 text-green-500 rounded-xl text-sm hover:bg-green-500/30 transition">
+                                Включить 2FA
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+
+                <!-- Backups -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-medium mb-6">Резервное копирование</h3>
+                    <div class="flex gap-4 mb-6">
+                        <button onclick="createBackup()" class="px-6 py-3 bg-green-500/20 text-green-500 rounded-xl text-sm hover:bg-green-500/30 transition">
+                            Создать бэкап
+                        </button>
+                        <button onclick="loadBackups()" class="px-6 py-3 bg-blue-500/20 text-blue-500 rounded-xl text-sm hover:bg-blue-500/30 transition">
+                            Обновить список
+                        </button>
+                    </div>
+                    <div id="backupsList" class="space-y-2">
+                        <div class="text-center text-gray-600 py-4">Загрузка...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function createBackup() {
+            const response = await fetch('/admin/settings/backup', { method: 'POST' });
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_${new Date().toISOString().slice(0,10)}.zip`;
+            a.click();
+            loadBackups();
+        }
+
+        async function loadBackups() {
+            const response = await fetch('/admin/settings/backups/list');
+            const data = await response.json();
+            const container = document.getElementById('backupsList');
+            if (data.backups && data.backups.length > 0) {
+                container.innerHTML = data.backups.map(b => `
+                    <div class="flex items-center justify-between py-2 border-b border-gray-800/50">
+                        <div>
+                            <p class="font-mono text-sm">${b.name}</p>
+                            <p class="text-xs text-gray-500">${new Date(b.created).toLocaleString()} • ${(b.size / 1024).toFixed(2)} KB</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="restoreBackup('${b.name}')" class="px-3 py-1 bg-green-500/20 text-green-500 rounded hover:bg-green-500/30">Восстановить</button>
+                            <button onclick="deleteBackup('${b.name}')" class="px-3 py-1 bg-red-500/20 text-red-500 rounded hover:bg-red-500/30">Удалить</button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div class="text-center text-gray-600 py-4">Нет бэкапов</div>';
+            }
+        }
+
+        async function restoreBackup(name) {
+            if (confirm(`Восстановить из ${name}?`)) {
+                await fetch(`/admin/settings/backups/restore/${name}`, { method: 'POST' });
+                alert('Бэкап восстановлен. Перезапустите приложение.');
+            }
+        }
+
+        async function deleteBackup(name) {
+            if (confirm(`Удалить ${name}?`)) {
+                await fetch(`/admin/settings/backups/delete/${name}`, { method: 'DELETE' });
+                loadBackups();
+            }
+        }
+
+        loadBackups();
+    </script>
+</body>
+</html>

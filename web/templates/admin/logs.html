@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Логи | Telegram Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="text-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar (same as accounts) -->
+        <aside class="w-64 glass-card border-r border-gray-800/50 p-6 fixed h-full">
+            <!-- ... same sidebar as accounts.html ... -->
+        </aside>
+
+        <main class="flex-1 ml-64 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-light">Логи действий</h2>
+                <button onclick="exportLogs()" class="px-4 py-2 bg-green-500/20 text-green-500 rounded-xl text-sm hover:bg-green-500/30 transition">Экспорт в Excel</button>
+            </div>
+
+            <!-- Filters -->
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <form method="GET" action="{{ url_for('admin.logs') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" name="username" placeholder="Пользователь" value="{{ request.args.get('username', '') }}" class="bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                    <select name="action" class="bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                        <option value="">Все действия</option>
+                        {% for a in actions %}
+                        <option value="{{ a }}" {% if request.args.get('action') == a %}selected{% endif %}>{{ a }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="date" name="date_from" value="{{ request.args.get('date_from', '') }}" class="bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                    <input type="date" name="date_to" value="{{ request.args.get('date_to', '') }}" class="bg-black/50 border border-gray-800 rounded-xl p-3 text-sm">
+                    <button type="submit" class="bg-blue-500/20 text-blue-500 rounded-xl p-3 text-sm hover:bg-blue-500/30 transition col-span-1 md:col-span-4">Применить фильтры</button>
+                </form>
+            </div>
+
+            <!-- Logs Table -->
+            <div class="glass-card rounded-2xl overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-white/5">
+                        <tr class="text-xs text-gray-400 uppercase">
+                            <th class="px-4 py-3 text-left">Время</th>
+                            <th class="px-4 py-3 text-left">Пользователь</th>
+                            <th class="px-4 py-3 text-left">Действие</th>
+                            <th class="px-4 py-3 text-left">Детали</th>
+                            <th class="px-4 py-3 text-left">IP</th>
+                            <th class="px-4 py-3 text-left">User-Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800/50">
+                        {% for log in logs.items %}
+                        <tr class="hover:bg-white/5 transition text-sm">
+                            <td class="px-4 py-3">{{ log.timestamp.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+                            <td class="px-4 py-3">{{ log.username }}</td>
+                            <td class="px-4 py-3">{{ log.action }}</td>
+                            <td class="px-4 py-3 max-w-xs truncate" title="{{ log.details }}">{{ log.details|truncate(50) or '—' }}</td>
+                            <td class="px-4 py-3">{{ log.ip }}</td>
+                            <td class="px-4 py-3 max-w-xs truncate" title="{{ log.user_agent }}">{{ log.user_agent|truncate(30) or '—' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="px-4 py-12 text-center text-gray-500">Нет записей</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                {% if logs.pages > 1 %}
+                <div class="p-4 border-t border-gray-800/50 flex justify-between items-center">
+                    <span class="text-sm text-gray-400">Страница {{ logs.page }} из {{ logs.pages }}</span>
+                    <div class="flex gap-2">
+                        {% if logs.has_prev %}
+                        <a href="{{ url_for('admin.logs', page=logs.prev_num, **request.args) }}" class="px-4 py-2 bg-white/5 rounded-xl hover:bg-white/10">←</a>
+                        {% endif %}
+                        {% if logs.has_next %}
+                        <a href="{{ url_for('admin.logs', page=logs.next_num, **request.args) }}" class="px-4 py-2 bg-white/5 rounded-xl hover:bg-white/10">→</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function exportLogs() {
+            const res = await fetch('/admin/logs/export', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ format: 'xlsx' })
+            });
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'logs.xlsx';
+            a.click();
+        }
+    </script>
+</body>
+</html>

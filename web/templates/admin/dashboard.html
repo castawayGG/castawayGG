@@ -1,0 +1,116 @@
+{% extends "base_admin.html" %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-8 pt-10">
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            <h2 class="text-3xl font-light tracking-tight">Обзор системы</h2>
+            <p class="text-zinc-500 text-sm mt-1">Сводка данных за сегодня</p>
+        </div>
+        <button onclick="location.reload()" class="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
+    </div>
+
+    <!-- Карточки -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
+            <p class="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-2">Аккаунты</p>
+            <p class="text-3xl font-light">{{ total_accounts }}</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
+            <p class="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-2">Прокси (актив)</p>
+            <p class="text-3xl font-light text-emerald-400">{{ working_proxies }} <span class="text-lg text-zinc-500">/ {{ total_proxies }}</span></p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+            <p class="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-2">Кампании</p>
+            <p class="text-3xl font-light">{{ total_campaigns }}</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+            <p class="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-2">Успешно сегодня</p>
+            <p class="text-3xl font-light text-blue-400">{{ today_stats.successful_logins if today_stats else 0 }}</p>
+        </div>
+    </div>
+
+    <!-- График и логи -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass-card rounded-2xl p-6">
+            <h3 class="text-sm font-medium text-zinc-400 mb-6">Динамика входов (7 дней)</h3>
+            <div class="h-64 w-full">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 flex flex-col">
+            <h3 class="text-sm font-medium text-zinc-400 mb-4">Журнал безопасности</h3>
+            <div class="flex-1 overflow-y-auto pr-2 space-y-4">
+                {% for log in recent_logs %}
+                <div class="flex items-start gap-3 border-b border-zinc-800/50 pb-3 last:border-0">
+                    <div class="w-2 h-2 rounded-full mt-1.5 {% if 'удален' in log.action.lower() %}bg-red-500{% elif 'вход' in log.action.lower() %}bg-emerald-500{% else %}bg-blue-500{% endif %}"></div>
+                    <div>
+                        <p class="text-sm">{{ log.action }}</p>
+                        <p class="text-xs text-zinc-500 mt-0.5">{{ log.username }} • {{ log.timestamp|timestamp_to_date }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-zinc-500 text-center py-10">Нет новых записей</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const chartData = {{ chart_data|tojson }};
+    const labels = chartData.map(d => d.date);
+    const visits = chartData.map(d => d.visits);
+    const logins = chartData.map(d => d.logins);
+
+    Chart.defaults.color = '#71717a';
+    Chart.defaults.font.family = 'Inter';
+
+    new Chart(document.getElementById('activityChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { 
+                    label: 'Успешные входы', 
+                    data: logins, 
+                    borderColor: '#3b82f6', 
+                    backgroundColor: 'rgba(59,130,246,0.1)', 
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                },
+                { 
+                    label: 'Визиты', 
+                    data: visits, 
+                    borderColor: '#3f3f46', 
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: { legend: { display: false } },
+            scales: { 
+                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}
