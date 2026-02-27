@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ControlPanel | Панель управления</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { primary: '#0f172a', secondary: '#334155', accent: '#3b82f6' }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Минималистичные скроллбары и анимации */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .modal-enter { opacity: 0; transform: scale(0.95); transition: all 0.2s ease-out; }
+        .modal-enter-active { opacity: 1; transform: scale(1); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between hidden md:flex z-10">
+        <div>
+            <div class="h-16 flex items-center px-6 border-b border-gray-100">
+                <svg class="w-6 h-6 text-accent mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span class="text-lg font-bold text-primary tracking-tight">ControlPanel</span>
+            </div>
+            <nav class="p-4 space-y-1">
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg bg-blue-50 text-accent">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Дашборд
+                </a>
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Аккаунты ({{ accounts_count | default('0') }})
+                </a>
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    Прокси
+                </a>
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                    Кампании
+                </a>
+                <a href="#" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Логи
+                </a>
+            </nav>
+        </div>
+        
+        <div class="p-4 border-t border-gray-100">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                        {{ current_user.username[0]|upper if current_user else 'A' }}
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-primary">{{ current_user.username if current_user else 'Admin' }}</p>
+                        <p class="text-xs text-gray-500">Администратор</p>
+                    </div>
+                </div>
+                <a href="#" class="text-gray-400 hover:text-red-500 transition-colors" title="Выйти">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50/50">
+        
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-8 z-10">
+            <div class="flex items-center flex-1">
+                <button class="md:hidden text-gray-500 hover:text-primary mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <h1 class="text-xl font-semibold text-primary">Обзор системы</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="openModal('addAccountModal')" class="bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors shadow-sm flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Добавить аккаунт
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-auto p-6 lg:p-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-medium text-gray-500">Всего аккаунтов</h3>
+                        <span class="p-2 bg-blue-50 text-accent rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></span>
+                    </div>
+                    <p class="text-3xl font-bold text-primary mt-2">{{ total_accounts | default('1,024') }}</p>
+                    <p class="text-xs text-green-600 mt-2 flex items-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg> 12 за сегодня</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-medium text-gray-500">Рабочих прокси</h3>
+                        <span class="p-2 bg-green-50 text-green-600 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg></span>
+                    </div>
+                    <p class="text-3xl font-bold text-primary mt-2">{{ active_proxies | default('48') }}</p>
+                    <p class="text-xs text-gray-500 mt-2">Из {{ total_proxies | default('50') }} всего</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-medium text-gray-500">Активные кампании</h3>
+                        <span class="p-2 bg-purple-50 text-purple-600 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg></span>
+                    </div>
+                    <p class="text-3xl font-bold text-primary mt-2">{{ active_campaigns | default('3') }}</p>
+                    <p class="text-xs text-purple-600 mt-2">В процессе рассылки</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-medium text-gray-500">Ошибок за 24ч</h3>
+                        <span class="p-2 bg-red-50 text-red-600 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
+                    </div>
+                    <p class="text-3xl font-bold text-primary mt-2">{{ error_count | default('0') }}</p>
+                    <p class="text-xs text-gray-500 mt-2">FloodWait и прочее</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+                    <h2 class="text-sm font-semibold text-primary uppercase tracking-wider">База аккаунтов</h2>
+                    <div class="flex space-x-2">
+                        <button class="text-gray-500 hover:text-primary px-3 py-1.5 border border-gray-200 rounded-lg bg-white text-sm font-medium transition-colors">
+                            Массовые действия
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full whitespace-nowrap text-left text-sm">
+                        <thead class="bg-white text-gray-500">
+                            <tr>
+                                <th class="px-6 py-3 font-medium border-b border-gray-200">Номер</th>
+                                <th class="px-6 py-3 font-medium border-b border-gray-200">Username</th>
+                                <th class="px-6 py-3 font-medium border-b border-gray-200">Статус</th>
+                                <th class="px-6 py-3 font-medium border-b border-gray-200">Прокси</th>
+                                <th class="px-6 py-3 font-medium border-b border-gray-200 text-right">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="font-medium text-primary">+7 999 123 45 67</div>
+                                    <div class="text-xs text-gray-400">Добавлен: 12.05.2024</div>
+                                </td>
+                                <td class="px-6 py-4 text-gray-600">@test_user</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Активен
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-gray-500">192.168.1.1:1080</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button class="text-accent hover:text-blue-700 text-sm font-medium mr-3">Проверить</button>
+                                    <button class="text-red-500 hover:text-red-700 text-sm font-medium">Удалить</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                    </table>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500 bg-gray-50/50">
+                    <div>Показано 1-10 из 1024</div>
+                    <div class="flex space-x-1">
+                        <button class="px-3 py-1 border border-gray-200 rounded hover:bg-white disabled:opacity-50" disabled>Пред</button>
+                        <button class="px-3 py-1 border border-gray-200 rounded hover:bg-white bg-white shadow-sm">След</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="addAccountModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity" onclick="closeModal('addAccountModal')"></div>
+        
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg modal-enter" id="modalPanel">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">Добавить новый аккаунт</h3>
+                                <div class="mt-4">
+                                    <form id="add-account-form" class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Номер телефона</label>
+                                            <input type="text" placeholder="+7 999 000 00 00" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Прокси (опционально)</label>
+                                            <select class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm">
+                                                <option>Без прокси</option>
+                                                <option>192.168.1.1 (socks5)</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button type="button" class="inline-flex w-full justify-center rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 sm:ml-3 sm:w-auto">Запросить код</button>
+                        <button type="button" onclick="closeModal('addAccountModal')" class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <div class="bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center text-sm font-medium">
+            <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span id="toast-message">Действие успешно выполнено</span>
+        </div>
+    </div>
+
+    <script>
+        // Функция открытия модального окна
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('modalPanel').classList.add('modal-enter-active');
+            }, 10);
+        }
+
+        // Функция закрытия модального окна
+        function closeModal(modalId) {
+            document.getElementById('modalPanel').classList.remove('modal-enter-active');
+            setTimeout(() => {
+                document.getElementById(modalId).classList.add('hidden');
+            }, 200); // Ожидание окончания анимации
+        }
+
+        // Функция показа уведомлений
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            
+            // Анимация появления
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            // Скрытие через 3 секунды
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Пример вызова тоста при загрузке (можно удалить)
+        // setTimeout(() => showToast('Добро пожаловать в панель управления'), 500);
+    </script>
+</body>
+</html>
